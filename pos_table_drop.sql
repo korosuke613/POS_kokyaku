@@ -1,0 +1,16 @@
+drop table prod_info;
+drop table fare_info;
+drop table fare_detail;
+drop table purc_info;
+drop table purc_detail;
+drop table sale_info;
+drop table sale_detail;
+drop table big_category;
+drop table category_detail;
+drop table store_prod;
+drop table country_info;
+drop table region_info;
+drop table customer_info;
+drop table customer_point;
+drop table store_info;
+drop table tax_rate;
