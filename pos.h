@@ -6,7 +6,8 @@
 #include<libpq-fe.h>
 
 int users(int start_id, int end_id);
-int usepr(int customer_id);
+int usrpr(int customer_id);
+int usrup(char* customer_id);
 
 
 #endif

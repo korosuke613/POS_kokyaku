@@ -72,5 +72,24 @@ int usrpr(int customer_id){
     return 0;
 }
 
+int usrup(char* customer_info){
+    char sql[BUFSIZ];
+    PGresult *res;
 
+//    sscanf(
 
+    sprintf(sql, "UPDATE customer_info SET(customer_name,customer_gender,customer_birth,customer_address,customer_phone,customer_email) = ('%s','%c','%d','%s','%s','%s') WHERE customer_id = %d",
+        "平古場風太",
+        '0',
+        19950613,
+        "鹿児島県",
+        "080888000",
+        "kohou@gmail.com",
+        7
+    );
+
+    res = PQexec(con, sql); 
+    printf("%s\n", sql);
+
+    return 0;
+}

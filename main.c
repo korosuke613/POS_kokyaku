@@ -36,7 +36,7 @@ int main(void){
 
     users(0,100);
     usrpr(5);
-
+    usrup("aa");
 
 
     return 0;
