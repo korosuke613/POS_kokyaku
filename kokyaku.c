@@ -56,7 +56,7 @@ int usrpr(int customer_id){
 
     //SQLコマンド実行結果状態を確認
     if(PQresultStatus(res) != PGRES_TUPLES_OK){
- printf("-ERR XXX\n");   //エラーコード 
+        printf("-ERR XXX\n");   //エラーコード 
         printf("%s", PQresultErrorMessage(res));
         PQfinish(con);
         exit(1);
@@ -77,17 +77,17 @@ int usrup(char* customer_info){
     char sql[BUFSIZ];
     PGresult *res;
 
-//    sscanf(
+    //    sscanf(
 
     sprintf(sql, "UPDATE customer_info SET(customer_name,customer_gender,customer_birth,customer_address,customer_phone,customer_email) = ('%s','%c','%d','%s','%s','%s') WHERE customer_id = %d",
-        "平古場風太",
-        '1',
-        19950613,
-        "鹿児島県",
-        "080888000",
-        "kohou@gmail.com",
-        7
-    );
+            "平古場風太",
+            '1',
+            19950613,
+            "鹿児島県",
+            "080888000",
+            "kohou@gmail.com",
+            7
+           );
     res = PQexec(con, sql);
 
     //SQLコマンド実行結果状態を確認
