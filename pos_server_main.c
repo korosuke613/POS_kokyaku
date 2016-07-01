@@ -28,13 +28,27 @@ int main(int argc, char *argv[]){
  *  [RETURN]
  *    NONE
  **/
-void service_start(int __lsoc){
+void service_start(   int __lsoc){
+
+#if 0
+
   char *dbHost  = "kite.cs.miyazaki-u.ac.jp";
   char *dbPort  = "5432";
   char *dbName  = "db39"; //データベース名
   char *dbLogin = "dbuser39";
   char *dbPwd   = "dbpass39";
-  char connInfo[BUFSIZE];
+
+#else
+
+char *dbHost = "localhost";
+char *dbPort = "5432";
+char *dbName = "testdb";
+char *dbLogin = "Futa";
+char *dbPwd = "bitiken613";
+
+#endif
+
+    char connInfo[BUFSIZE];
   pthread_t worker;        //スレッドID用
   ThreadParameter *threadParam;  //スレッド引数用構造体
   struct sockaddr_in client;
