@@ -1,118 +1,165 @@
 #include "pos.h"
 
-extern PGconn *con;
+int users(ThreadParameter *threadParam, int start_id, int end_id){
+	char sendBuf[BUFSIZE];
+	int  sendLen;
+	pthread_t selfId;                      //自分自身のスレッドID
 
-int users(int start_id, int end_id){
-    char sql[BUFSIZ];
-    PGresult *res;	//PGresultオブジェクト
-    int i, resultRows, resultFields;
+	char sql[BUFSIZE];
+	PGresult *res;	//PGresultオブジェクト
+	int i, resultRows, resultFields;
 
-    //顧客の最大人数を取得
-    //SQLコマンド実行
-    sprintf(sql, "SELECT * FROM customer_info ORDER BY customer_id");
-    res = PQexec(con, sql);
+	selfId = pthread_self(); //自分自身のスレッドIDを取得
 
-    //SQLコマンド実行結果状態を確認
-    if(PQresultStatus(res) != PGRES_TUPLES_OK){
-        printf("%s", PQresultErrorMessage(res));
-        PQfinish(con);
-        exit(1);
-    }
 
-    //結果の行数、列数を取得
-    resultRows = PQntuples(res);
-    resultFields = PQnfields(res);
+	//顧客の最大人数を取得
+	//SQLコマンド実行
+	sprintf(sql, "SELECT * FROM customer_info ORDER BY customer_id");
+	res = PQexec(threadParam->con, sql);
 
-    //終了顧客数が最大顧客数を越している場合、最大顧客数に合わせる。
-    if(end_id > resultRows) end_id = resultRows;
+	//SQLコマンド実行結果状態を確認
+	if(PQresultStatus(res) != PGRES_TUPLES_OK){
+		printf("%s", PQresultErrorMessage(res));
+		PQfinish(threadParam->con);
+		return 1;
+	}
 
-    printf("最大顧客数は%dです。\n", resultRows);
-    for(i=start_id;i<end_id;i++){
-        printf("%s %s %s %s %s %s %s %s\n",
-                PQgetvalue(res, i, 0),
-                PQgetvalue(res, i, 1),
-                PQgetvalue(res, i, 2),
-                PQgetvalue(res, i, 3),
-                PQgetvalue(res, i, 4),
-                PQgetvalue(res, i, 5),
-                PQgetvalue(res, i, 6),
-                PQgetvalue(res, i, 7)
-              );
-    }
+	//結果の行数、列数を取得
+	resultRows = PQntuples(res);
+	resultFields = PQnfields(res);
 
-		/* PGresultに割当られた記憶領域を開放 */
-		PQclear(res);
+	//終了顧客数が最大顧客数を越している場合、最大顧客数に合わせる。
+	if(end_id > resultRows) end_id = resultRows;
+	if(start_id < 1) start_id = 1;
 
-		printf("終了しました\n");
+	sprintf(sendBuf, "%d%s", resultRows, ENTER);
+	sendLen = strlen(sendBuf);
+	send(threadParam->soc, sendBuf, sendLen, 0); 
+	printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
 
-    return 0;	
+	for(i=start_id-1;i<end_id;i++){
+		sprintf(sendBuf, "%s %s %s %s %s %s %s %s\n",
+				PQgetvalue(res, i, 0),
+				PQgetvalue(res, i, 1),
+				PQgetvalue(res, i, 2),
+				PQgetvalue(res, i, 3),
+				PQgetvalue(res, i, 4),
+				PQgetvalue(res, i, 5),
+				PQgetvalue(res, i, 6),
+				PQgetvalue(res, i, 7),
+				ENTER
+				);
+	sendLen = strlen(sendBuf);
+	send(threadParam->soc, sendBuf, sendLen, 0); 
+	sendBuf[sendLen-1] = '\0';
+	printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+	}
+
+	/* PGresultに割当られた記憶領域を開放 */
+	PQclear(res);
+
+	return 0;	
 }
 
-int usrpr(int customer_id){
-    int i, resultRows, resultFields;
-    char sql[BUFSIZ];
-    PGresult *res;  //PGresultオブジェクト
+int usrpr(ThreadParameter *threadParam, int customer_id){
+	char sendBuf[BUFSIZE];
+	int  sendLen;
+	pthread_t selfId;                      //自分自身のスレッドID
 
-    //指定の顧客情報を取得
-    //SQLコマンド実行
-    sprintf(sql, "SELECT * FROM customer_info WHERE customer_id = %d", customer_id);
-    res = PQexec(con, sql);
+	int i, resultRows, resultFields;
+	char sql[BUFSIZ];
+	PGresult *res;  //PGresultオブジェクト
 
-    //SQLコマンド実行結果状態を確認
-    if(PQresultStatus(res) != PGRES_TUPLES_OK){
-        printf("-ERR XXX\n");   //エラーコード 
-        printf("%s", PQresultErrorMessage(res));
-        PQfinish(con);
-        exit(1);
-    }
-
-    resultFields = PQnfields(res);
+	selfId = pthread_self(); //自分自身のスレッドIDを取得
 
 
-    for(i=0;i<resultFields;i++){
-        printf("%s ", PQgetvalue(res, 0, i) );
-    }
-    printf("\n");
+	//指定の顧客情報を取得
+	//SQLコマンド実行
+	sprintf(sql, "SELECT * FROM customer_info WHERE customer_id = %d", customer_id);
+	res = PQexec(threadParam->con, sql);
 
-		/* PGresultに割当られた記憶領域を開放 */
+	//SQLコマンド実行結果状態を確認
+	if(PQresultStatus(res) != PGRES_TUPLES_OK){
+		sprintf(sendBuf, "-ERR XXX%s", ENTER);   //エラーコード 
+		sendLen = strlen(sendBuf);
+		send(threadParam->soc, sendBuf, sendLen, 0);
+		printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+
+		sprintf(sendBuf, "%s%s", PQresultErrorMessage(res), ENTER);
+		sendLen = strlen(sendBuf);
+		send(threadParam->soc, sendBuf, sendLen, 0);
+		printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+
 		PQclear(res);
+		return 1;
+	}
+
+	sprintf(sendBuf, "%s %s %s %s %s %s %s %s%s",
+			PQgetvalue(res, i, 0), 
+			PQgetvalue(res, i, 1), 
+			PQgetvalue(res, i, 2), 
+			PQgetvalue(res, i, 3), 
+			PQgetvalue(res, i, 4), 
+			PQgetvalue(res, i, 5), 
+			PQgetvalue(res, i, 6), 
+			PQgetvalue(res, i, 7),
+			ENTER
+			);
 
 
-    return 0;
+	sendLen = strlen(sendBuf);
+	send(threadParam->soc, sendBuf, sendLen, 0);
+	printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+
+
+	/* PGresultに割当られた記憶領域を開放 */
+	PQclear(res);
+
+
+	return 0;
 }
 
-int usrup(char* customer_info){
-    char sql[BUFSIZ];
-    PGresult *res;
-		int id, birth;
-		char name[BUFSIZ], gender, address[BUFSIZ], mail[BUFSIZ], tel[BUFSIZ];
+int usrup(ThreadParameter *threadParam, int id, char *name, char *gender, int birth, char *address, char *tel, char *mail){
+  char sendBuf[BUFSIZE];
+	int  sendLen;
+	pthread_t selfId;                      //自分自身のスレッドID
 
-		sscanf(customer_info, "%d %s %c %d %s %s %s", &id, name, &gender, &birth, address, tel, mail); 
+	char sql[BUFSIZ];
+	PGresult *res;
 
-    sprintf(sql, "UPDATE customer_info SET(customer_name,customer_gender,customer_birth,customer_address,customer_phone,customer_email) = ('%s','%c','%d','%s','%s','%s') WHERE customer_id = %d",
-            name,
-            gender,
-            birth,
-            address,
-            tel,
-            mail,
-            id
-           );
-    res = PQexec(con, sql);
+	sprintf(sql, "UPDATE customer_info SET(customer_name,customer_gender,customer_birth,customer_address,customer_phone,customer_email) = ('%s','%s','%d','%s','%s','%s') WHERE customer_id = %d",
+			name,
+			gender,
+			birth,
+			address,
+			tel,
+			mail,
+			id
+			);
+	res = PQexec(threadParam->con, sql);
 
-    //SQLコマンド実行結果状態を確認
-    if(PQresultStatus(res) != PGRES_COMMAND_OK){
-        printf("-ERR XXX\n");   //エラーコード
-        printf("%s", PQresultErrorMessage(res));
-        PQfinish(con);
-        exit(1);
-    }
+  //SQLコマンド実行結果状態を確認
+	if(PQresultStatus(res) != PGRES_COMMAND_OK){
+		sprintf(sendBuf, "-ERR XXX%s", ENTER);   //エラーコード 
+		sendLen = strlen(sendBuf);
+		send(threadParam->soc, sendBuf, sendLen, 0);
+		printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
 
-    printf("+OK\n"); //成功コード
+		sprintf(sendBuf, "%s%s", PQresultErrorMessage(res), ENTER);
+		sendLen = strlen(sendBuf);
+		send(threadParam->soc, sendBuf, sendLen, 0);
+		printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
 
-		/* PGresultに割当られた記憶領域を開放 */
 		PQclear(res);
+		return 1;
+	}
+
+		
+	printf("+OK\n"); //成功コード
+
+	/* PGresultに割当られた記憶領域を開放 */
+	PQclear(res);
 
 
-    return 0;
+	return 0;
 }
