@@ -39,7 +39,11 @@ int users(int start_id, int end_id){
                 PQgetvalue(res, i, 7)
               );
     }
-    printf("終了しました\n");
+
+		/* PGresultに割当られた記憶領域を開放 */
+		PQclear(res);
+
+		printf("終了しました\n");
 
     return 0;	
 }
@@ -70,23 +74,29 @@ int usrpr(int customer_id){
     }
     printf("\n");
 
+		/* PGresultに割当られた記憶領域を開放 */
+		PQclear(res);
+
+
     return 0;
 }
 
 int usrup(char* customer_info){
     char sql[BUFSIZ];
     PGresult *res;
+		int id, birth;
+		char name[BUFSIZ], gender, address[BUFSIZ], mail[BUFSIZ], tel[BUFSIZ];
 
-    //    sscanf(
+		sscanf(customer_info, "%d %s %c %d %s %s %s", &id, name, &gender, &birth, address, tel, mail); 
 
     sprintf(sql, "UPDATE customer_info SET(customer_name,customer_gender,customer_birth,customer_address,customer_phone,customer_email) = ('%s','%c','%d','%s','%s','%s') WHERE customer_id = %d",
-            "平古場風太",
-            '1',
-            19950613,
-            "鹿児島県",
-            "080888000",
-            "kohou@gmail.com",
-            7
+            name,
+            gender,
+            birth,
+            address,
+            tel,
+            mail,
+            id
            );
     res = PQexec(con, sql);
 
@@ -99,6 +109,10 @@ int usrup(char* customer_info){
     }
 
     printf("+OK\n"); //成功コード
+
+		/* PGresultに割当られた記憶領域を開放 */
+		PQclear(res);
+
 
     return 0;
 }
