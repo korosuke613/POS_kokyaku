@@ -15,6 +15,7 @@ void *pos_controller(void *__arg){
     pthread_t selfId;                      //自分自身のスレッドID
     char comm[10][BUFSIZE];
     int perm1Int, perm2Int;
+    double perm1Double;
     int cnt;
 
     selfId = pthread_self(); //自分自身のスレッドIDを取得
@@ -57,7 +58,28 @@ void *pos_controller(void *__arg){
                 sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
             }
 
+        }else if(strcmp( comm[0], TAXPR ) == 0){
+            /* 税率表示 */
+            taxprint(threadParam);
+            sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);  
 
+        }else if(strcmp( comm[0], TAXUP ) == 0){
+            /* 税率更新 */
+            if( sscanf(recvBuf, "%s %d %d %lf", comm[0], &perm1Int, &perm2Int, &perm1Double) == 4){
+                taxupdate(threadParam, perm1Int, perm2Int, perm1Double);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }
+
+        }else if(strcmp( comm[0], TAXIN ) == 0){ 
+            /* 税率追加 */
+            if( sscanf(recvBuf, "%s %d %d %lf", comm[0], &perm1Int, &perm2Int, &perm1Double) == 4){
+                taxinsert(threadParam, perm1Int, perm2Int, perm1Double);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }
         }else{
             sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
         }

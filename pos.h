@@ -27,6 +27,9 @@
 #define USERS    "USERS"  //顧客情報総合出力コマンド
 #define USRPR    "USRPR"  //顧客情報個人出力コマンド
 #define USRUP    "USRUP"  //顧客情報更新コマンド
+#define TAXPR    "TAXPR"
+#define TAXUP    "TAXUP"
+#define TAXIN    "TAXIN"
 
 //*** レスポンスステータス ***//
 #define OK_STAT    "+OK"     //成功
@@ -52,5 +55,7 @@ extern int users(ThreadParameter *threadParam, int start_id, int end_id);
 extern int usrpr(ThreadParameter *threadParam, int customer_id);
 extern int usrup(ThreadParameter *threadParam, int id, char *name, char *gender, int birth, char     *addres, char *tel, char *mail);
 
-
+extern int taxprint(ThreadParameter *threadParam);
+extern int taxupdate(ThreadParameter *threadParam, int category_small_id ,int country_id, double tax_rate);
+extern int taxinsert(ThreadParameter *threadParam, int category_small_id ,int country_id, double tax_rate);
 #endif
