@@ -42,7 +42,7 @@ void service_start(   int __lsoc){
 
 char *dbHost = "localhost";
 char *dbPort = "5432";
-char *dbName = "testdb";
+char *dbName = "pos_server";
 char *dbLogin = "Futa";
 char *dbPwd = "bitiken613";
 
