@@ -34,6 +34,8 @@
 #define FAIRUP   "FAIRUP"
 #define FAIRIN   "FAIRIN"
 #define FAIRDEL  "FAIRDEL"
+#define FAIRDETPR  "FAIRDETPR"
+#define FAIRDETIN "FAIRDETIN"
 
 
 //*** レスポンスステータス ***//
@@ -45,10 +47,10 @@
 
 //*** スレッド関数に渡す引数情報構造体 ***//
 typedef struct _ThreadParamter {
-  struct in_addr c_ipaddr;  //IPアドレス
-  in_port_t      c_port;    //ポート番号
-  int            soc;       //コネクション用ソケットディスクリプタ
-  PGconn         *con;      //PGconnオブジェクト（データベース）
+    struct in_addr c_ipaddr;  //IPアドレス
+    in_port_t      c_port;    //ポート番号
+    int            soc;       //コネクション用ソケットディスクリプタ
+    PGconn         *con;      //PGconnオブジェクト（データベース）
 }ThreadParameter;
 
 extern int receive_message(int __s, char *__buf, int __maxlen);
@@ -67,5 +69,8 @@ extern int taxinsert(ThreadParameter *threadParam, int category_small_id ,int co
 extern int fairprint(ThreadParameter *threadParam);
 extern int fairupdate(ThreadParameter *threadParam, int fair_id ,char fair_name[BUFSIZ], char fair_start[BUFSIZ], char fair_end[BUFSIZ]);
 extern int fairinsert(ThreadParameter *threadParam, char fair_name[BUFSIZ], char fair_start[BUFSIZ], char fair_end[BUFSIZ]);
-extern int fairdelete(ThreadParameter *threadParam, int fair_id); 
+extern int fairdelete(ThreadParameter *threadParam, int fair_id);
+
+extern int fair_detailprint(ThreadParameter *threadParam, int fair_id);
+extern int fair_detailinsert(ThreadParameter *threadParam, int fair_id, int goods_id, double point_rate);
 #endif

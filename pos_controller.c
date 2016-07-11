@@ -103,13 +103,32 @@ void *pos_controller(void *__arg){
             }   
 
         }else if(strcmp( comm[0], FAIRDEL ) == 0){ 
-            /* フェア追加 */
+            /* フェア削除 */
             if( sscanf(recvBuf, "%s %d", comm[0], &perm1Int) == 2){
                 fairdelete(threadParam, perm1Int);
                 sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
             }else{
                 sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
             } 
+ 
+        }else if(strcmp( comm[0], FAIRDETPR ) == 0){ 
+            /* フェア詳細表示 */
+            if( sscanf(recvBuf, "%s %d", comm[0], &perm1Int) == 2){
+                fair_detailprint(threadParam, perm1Int);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }               
+
+         }else if(strcmp( comm[0], FAIRDETIN ) == 0){ 
+            /* フェア追加 */
+            if( sscanf(recvBuf, "%s %d %d %lf", comm[0], &perm1Int, &perm2Int, &perm1Double) == 4){
+                fair_detailinsert(threadParam, perm1Int, perm2Int, perm1Double);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }
+
 
         }else{
             sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
