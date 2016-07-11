@@ -80,6 +80,29 @@ void *pos_controller(void *__arg){
             }else{
                 sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
             }
+
+        }else if( strcmp( comm[0], FAIRPR ) == 0){
+            /* フェア表示 */
+            fairprint(threadParam);
+            sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+        }else if(strcmp( comm[0], FAIRUP ) == 0){
+            /* フェア更新 */
+            if( sscanf(recvBuf, "%s %d %s %s %s", comm[0], &perm1Int, comm[1], comm[2], comm[3]) == 5){
+                fairupdate(threadParam, perm1Int, comm[1], comm[2], comm[3]);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }   
+        }else if(strcmp( comm[0], FAIRIN ) == 0){ 
+            /* フェア追加 */
+            if( sscanf(recvBuf, "%s %s %s %s", comm[0], comm[1], comm[2], comm[3]) == 4){
+                fairinsert(threadParam, comm[1], comm[2], comm[3]);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }   
+
+
         }else{
             sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
         }
