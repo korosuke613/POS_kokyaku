@@ -102,6 +102,14 @@ void *pos_controller(void *__arg){
                 sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
             }   
 
+        }else if(strcmp( comm[0], FAIRDEL ) == 0){ 
+            /* フェア追加 */
+            if( sscanf(recvBuf, "%s %d", comm[0], &perm1Int) == 2){
+                fairdelete(threadParam, perm1Int);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            } 
 
         }else{
             sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);

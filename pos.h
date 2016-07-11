@@ -33,6 +33,8 @@
 #define FAIRPR   "FAIRPR"
 #define FAIRUP   "FAIRUP"
 #define FAIRIN   "FAIRIN"
+#define FAIRDEL  "FAIRDEL"
+
 
 //*** レスポンスステータス ***//
 #define OK_STAT    "+OK"     //成功
@@ -65,4 +67,5 @@ extern int taxinsert(ThreadParameter *threadParam, int category_small_id ,int co
 extern int fairprint(ThreadParameter *threadParam);
 extern int fairupdate(ThreadParameter *threadParam, int fair_id ,char fair_name[BUFSIZ], char fair_start[BUFSIZ], char fair_end[BUFSIZ]);
 extern int fairinsert(ThreadParameter *threadParam, char fair_name[BUFSIZ], char fair_start[BUFSIZ], char fair_end[BUFSIZ]);
+extern int fairdelete(ThreadParameter *threadParam, int fair_id); 
 #endif

@@ -152,4 +152,43 @@ int fairinsert(ThreadParameter *threadParam, char fair_name[BUFSIZ], char fair_s
 
 
     return 0;
-}        
+}
+
+ int fairdelete(ThreadParameter *threadParam, int fair_id){
+    char sendBuf[BUFSIZE];
+    int  sendLen;
+    pthread_t selfId;                      //自分自身のスレッドID
+
+    char sql[BUFSIZ];
+    PGresult *res;
+
+    sprintf(sql, "DELETE FROM fair_info WHERE fair_id = %d",
+            fair_id
+           );
+    res = PQexec(threadParam->con, sql);
+
+    //SQLコマンド実行結果状態を確認
+    if(PQresultStatus(res) != PGRES_COMMAND_OK){
+        sprintf(sendBuf, "-ERR XXX%s", ENTER);   //エラーコード 
+        sendLen = strlen(sendBuf);
+        send(threadParam->soc, sendBuf, sendLen, 0);
+        printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+
+        sprintf(sendBuf, "%s%s", PQresultErrorMessage(res), ENTER);
+        sendLen = strlen(sendBuf);
+        send(threadParam->soc, sendBuf, sendLen, 0);
+        printf("[C_THREAD %u] SEND=> %s\n", selfId, sendBuf);
+
+        PQclear(res);
+        return 1;
+    }
+
+
+    printf("+OK\n"); //成功コード
+
+    /* PGresultに割当られた記憶領域を開放 */
+    PQclear(res);
+
+
+    return 0;
+}          
