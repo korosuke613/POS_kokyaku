@@ -36,7 +36,7 @@
 #define FAIRDEL  "FAIRDEL"
 #define FAIRDETPR  "FAIRDETPR"
 #define FAIRDETIN "FAIRDETIN"
-
+#define FAIRDETDEL "FAIRDETDEL"
 
 //*** レスポンスステータス ***//
 #define OK_STAT    "+OK"     //成功
@@ -73,4 +73,6 @@ extern int fairdelete(ThreadParameter *threadParam, int fair_id);
 
 extern int fair_detailprint(ThreadParameter *threadParam, int fair_id);
 extern int fair_detailinsert(ThreadParameter *threadParam, int fair_id, int goods_id, double point_rate);
+extern int fair_detaidelete(ThreadParameter *threadParam, int fair_id, int goods_id);
+
 #endif

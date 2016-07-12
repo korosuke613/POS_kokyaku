@@ -121,7 +121,7 @@ void *pos_controller(void *__arg){
             }               
 
          }else if(strcmp( comm[0], FAIRDETIN ) == 0){ 
-            /* フェア追加 */
+            /* フェア詳細追加 */
             if( sscanf(recvBuf, "%s %d %d %lf", comm[0], &perm1Int, &perm2Int, &perm1Double) == 4){
                 fair_detailinsert(threadParam, perm1Int, perm2Int, perm1Double);
                 sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
@@ -130,6 +130,14 @@ void *pos_controller(void *__arg){
             }
 
 
+         }else if(strcmp( comm[0], FAIRDETDEL ) == 0){ 
+            /* フェア詳細削除 */
+            if( sscanf(recvBuf, "%s %d %d", comm[0], &perm1Int, &perm2Int) == 3){
+                fair_detaildelete(threadParam, perm1Int, perm2Int);
+                sprintf(sendBuf, "%s %s%s", OK_STAT, ENTER, DATE_END);
+            }else{
+                sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
+            }
         }else{
             sprintf(sendBuf, "%s %s%s", ER_STAT, ENTER, DATE_END);
         }
